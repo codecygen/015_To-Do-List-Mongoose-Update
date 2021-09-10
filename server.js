@@ -36,22 +36,73 @@ const item3 = new Item({
   name: "Eat Food"
 });
 
-app.get("/", function(req, res) {
-
-const day = date.getDate();
-
-  res.render("list", {listTitle: day, newListItems: items});
-
-});
-
 const defaultItems = [item1, item2, item3];
 
-Item.insertMany(defaultItems, (err) => {
-  if(err){
-    console.error(err);
-  } else {
-    console.log('New entries are added to the database!');
-  }
+const insertData = defaultItems => {
+  return new Promise((res, rej) => {
+
+    Item.find((err, items) => {
+      if(err) {
+        console.error(err);
+      } else {
+        console.log("Bitch");
+        if (items !== []) {
+          Item.insertMany(defaultItems, (err) => {
+            if(err){
+              console.error(err);
+              rej('Error!');
+            } else {
+              console.log('New entries are added to the database!');
+              res();
+            }
+          });
+        }
+      }
+    });
+
+
+    
+  });
+};
+
+const findData = () => {
+  return new Promise((res,rej) => {
+    Item.find((err, items) => {
+      if(err) {
+        console.error(err);
+        rej([]);
+      } else {
+        console.log("New entries found!");
+        res(items);
+      }
+    });
+  });
+};
+
+const listItemsRender = [];
+
+const asyncFuncs = async () => {
+  try {
+    await insertData(defaultItems);
+    const foundItems = await findData();
+
+    console.log(foundItems);
+
+    foundItems.forEach(foundItem => {
+      listItemsRender.push(foundItem.name);
+      console.log(foundItem.name)
+    });
+  } catch (error) {};
+};
+
+asyncFuncs();
+
+app.get("/", function(req, res) {
+
+  const day = date.getDate();
+
+  res.render("list", {listTitle: day, newListItems: listItemsRender});
+
 });
 
 app.post("/", function(req, res){
@@ -59,16 +110,16 @@ app.post("/", function(req, res){
   const item = req.body.newItem;
 
   if (req.body.list === "Work") {
-    workItems.push(item);
+    workItemsRender.push(item);
     res.redirect("/work");
   } else {
-    items.push(item);
+    listItemsRender.push(item);
     res.redirect("/");
   }
 });
 
 app.get("/work", function(req,res){
-  res.render("list", {listTitle: "Work List", newListItems: workItems});
+  res.render("list", {listTitle: "Work List", newListItems: workItemsRender});
 });
 
 app.get("/about", function(req, res){
