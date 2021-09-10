@@ -12,31 +12,28 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
-// const items = ["Buy Food", "Cook Food", "Eat Food"];
-// const workItems = [];
-
 main().catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect('mongodb://localhost:21017/todolistDB');
+  await mongoose.connect("mongodb://localhost:27017/arasDB");
 }
 
 const itemsSchema = new mongoose.Schema({
   name: String
 });
 
-const Item = mongoose.model('Item', itemsSchema);
+const Item = mongoose.model("Item", itemsSchema);
 
 const item1 = new Item({
-  name: 'Buy Food'
+  name: "Buy Food"
 });
 
 const item2 = new Item({
-  name: 'Cook Food'
+  name: "Cook Food"
 });
 
 const item3 = new Item({
-  name: 'Eat Food'
+  name: "Eat Food"
 });
 
 app.get("/", function(req, res) {
@@ -49,35 +46,13 @@ const day = date.getDate();
 
 const defaultItems = [item1, item2, item3];
 
-const insertData = (defaultItems) => {
-  return new Promise((res, rej) => {
-    Item.insertMany(defaultItems, (err) => {
-      if(err){
-        console.error(err);
-        rej('Error!');
-      } else {
-        console.log('New entries are added to the database!');
-        res();
-      }
-    });
-  });
-};
-
-const asyncFunctions = async () => {
-  try{
-    await insertData(defaultItems);
-    console.log(items);
-
-    items.forEach(item => {
-      console.log(item.name)
-    });
-
-    mongoose.connection.close();
-
-  } catch(err) {};
-};
-
-asyncFunctions();
+Item.insertMany(defaultItems, (err) => {
+  if(err){
+    console.error(err);
+  } else {
+    console.log('New entries are added to the database!');
+  }
+});
 
 app.post("/", function(req, res){
 
