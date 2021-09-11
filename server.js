@@ -40,28 +40,15 @@ const defaultItems = [item1, item2, item3];
 
 const insertData = defaultItems => {
   return new Promise((res, rej) => {
-
-    Item.find((err, items) => {
-      if(err) {
+    Item.insertMany(defaultItems, (err) => {
+      if(err){
         console.error(err);
+        rej('Error!');
       } else {
-        console.log("Bitch");
-        if (items !== []) {
-          Item.insertMany(defaultItems, (err) => {
-            if(err){
-              console.error(err);
-              rej('Error!');
-            } else {
-              console.log('New entries are added to the database!');
-              res();
-            }
-          });
-        }
+        console.log('New entries are added to the database!');
+        res();
       }
-    });
-
-
-    
+    });    
   });
 };
 
@@ -83,10 +70,14 @@ const listItemsRender = [];
 
 const asyncFuncs = async () => {
   try {
-    await insertData(defaultItems);
-    const foundItems = await findData();
+    let foundItems = await findData();
 
-    console.log(foundItems);
+    if(foundItems.length === 0) {
+      await insertData(defaultItems);
+      foundItems = await findData();
+    }
+
+    console.log(foundItems.length);
 
     foundItems.forEach(foundItem => {
       listItemsRender.push(foundItem.name);
