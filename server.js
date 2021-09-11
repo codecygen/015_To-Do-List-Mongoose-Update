@@ -43,7 +43,7 @@ const insertData = defaultItems => {
     Item.insertMany(defaultItems, (err) => {
       if(err){
         console.error(err);
-        rej('Error!');
+        rej('Error in insertMany!');
       } else {
         console.log('New entries are added to the database!');
         res();
@@ -104,6 +104,12 @@ app.post("/", function(req, res){
     workItemsRender.push(item);
     res.redirect("/work");
   } else {
+    const newListItemRender = new Item({
+      name: item
+    });
+
+    newListItemRender.save();
+
     listItemsRender.push(item);
     res.redirect("/");
   }
