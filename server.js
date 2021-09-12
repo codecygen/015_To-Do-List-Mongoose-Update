@@ -66,7 +66,18 @@ const findData = () => {
   });
 };
 
-const listItemsRender = [];
+const deleteOneData = (deleteObj) => {
+  Item.deleteOne({ _id: deleteObj }, err => {
+    if(err) {
+      console.error(err);
+    } else {
+      console.log('An item is successfully deleted!');
+      asyncUpdateList();
+    }
+  });
+};
+
+let listItemsRender = [];
 
 const asyncFuncs = async () => {
   try {
@@ -87,6 +98,16 @@ const asyncFuncs = async () => {
 };
 
 asyncFuncs();
+
+const asyncUpdateList = async () => {
+  let foundItems = await findData();
+  listItemsRender = [];
+
+  foundItems.forEach(foundItem => {
+    listItemsRender.push(foundItem);
+    console.log(foundItem.name)
+  });
+};
 
 app.get("/", function(req, res) {
 
@@ -116,18 +137,13 @@ app.post("/", function(req, res){
 });
 
 // When checkbox is checked, delete the checked entry
-// Also see list.ejs form which contains checknox to understand this
+// Also see list.ejs form which contains checkbox to understand this
 app.post('/delete', (req, res) => {
   const checkedItemId = req.body.checkbox;
 
-  Item.deleteOne({ _id: checkedItemId }, err => {
-    if(err) {
-      console.error(err);
-    } else {
-      console.log('An item is successfully deleted!');
-      res.redirect('/');
-    }
-  });
+  deleteOneData(checkedItemId);
+
+  res.redirect('/');
 });
 
 app.get("/work", function(req,res){
