@@ -22,7 +22,14 @@ const itemsSchema = new mongoose.Schema({
   name: String
 });
 
+const listSchema = new mongoose.Schema({
+  name: String,
+  items: [itemsSchema]
+});
+
 const Item = mongoose.model("Item", itemsSchema);
+
+const List = mongoose.model('List', listSchema);
 
 const item1 = new Item({
   name: "Buy Food"
@@ -152,6 +159,28 @@ app.get("/work", function(req,res){
 
 app.get("/about", function(req, res){
   res.render("about");
+});
+
+const findOneInListCollection = requestedName => {
+  List.findOne({ name: requestedName }, err => {
+    if(err) {
+      console.error(err);
+    } else {
+      console.log(requestedName);
+    }
+  });
+};
+
+app.get('/:customListName', (req, res) => {
+  // Whatever is entered to the browser after slash, will be saved as a customListName
+  const customListName = req.params.customListName;
+  findOneInListCollection(customListName);
+  const list = new List({
+    name: customListName,
+    items: defaultItems
+  });
+
+  list.save();
 });
 
 app.listen(3000, function() {
