@@ -166,15 +166,13 @@ const addOneInListCollection = requestedName => {
     if(err) {
       console.error(err);
     } else {
-      if(obj === null) {
+      if(!obj) {
         const list = new List({
           name: requestedName,
           items: defaultItems
         });
       
         list.save();
-      } else {
-        console.log(`${obj} found!`);
       }
     }
   });
