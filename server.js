@@ -124,25 +124,6 @@ app.get("/", function(req, res) {
 
 });
 
-app.post("/", function(req, res){
-
-  const item = req.body.newItem;
-
-  if (req.body.list === "Work") {
-    workItemsRender.push(item);
-    res.redirect("/work");
-  } else {
-    const newListItemRender = new Item({
-      name: item
-    });
-
-    newListItemRender.save();
-
-    listItemsRender.push(newListItemRender);
-    res.redirect("/");
-  }
-});
-
 // When checkbox is checked, delete the checked entry
 // Also see list.ejs form which contains checkbox to understand this
 app.post('/delete', (req, res) => {
@@ -153,36 +134,32 @@ app.post('/delete', (req, res) => {
   res.redirect('/');
 });
 
-app.get("/work", function(req,res){
-  res.render("list", {listTitle: "Work List", newListItems: workItemsRender});
-});
-
 app.get("/about", function(req, res){
   res.render("about");
 });
 
-const addOneInListCollection = requestedName => {
-  List.findOne({ name: requestedName }, (err, obj) => {
+// Whatever is entered to the browser after slash, will be saved as a customListName
+app.get('/:customListName', (req, res) => {
+  
+  const customListName = req.params.customListName;
+
+  List.findOne({ name: customListName }, (err, list) => {
     if(err) {
       console.error(err);
     } else {
-      if(!obj) {
+      if(!list) {
         const list = new List({
-          name: requestedName,
+          name: customListName,
           items: defaultItems
         });
       
         list.save();
+        res.redirect(`/${customListName}`);
+      } else {
+        res.render("list", {listTitle: `${list.name} List`, newListItems: list.items});
       }
     }
   });
-};
-
-app.get('/:customListName', (req, res) => {
-  // Whatever is entered to the browser after slash, will be saved as a customListName
-  const customListName = req.params.customListName;
-
-  addOneInListCollection(customListName);
   
 });
 
