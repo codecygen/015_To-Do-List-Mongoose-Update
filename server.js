@@ -161,12 +161,21 @@ app.get("/about", function(req, res){
   res.render("about");
 });
 
-const findOneInListCollection = requestedName => {
-  List.findOne({ name: requestedName }, err => {
+const addOneInListCollection = requestedName => {
+  List.findOne({ name: requestedName }, (err, obj) => {
     if(err) {
       console.error(err);
     } else {
-      console.log(requestedName);
+      if(obj === null) {
+        const list = new List({
+          name: requestedName,
+          items: defaultItems
+        });
+      
+        list.save();
+      } else {
+        console.log(`${obj} found!`);
+      }
     }
   });
 };
@@ -174,13 +183,9 @@ const findOneInListCollection = requestedName => {
 app.get('/:customListName', (req, res) => {
   // Whatever is entered to the browser after slash, will be saved as a customListName
   const customListName = req.params.customListName;
-  findOneInListCollection(customListName);
-  const list = new List({
-    name: customListName,
-    items: defaultItems
-  });
 
-  list.save();
+  addOneInListCollection(customListName);
+  
 });
 
 app.listen(3000, function() {
