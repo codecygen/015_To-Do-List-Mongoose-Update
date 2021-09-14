@@ -126,17 +126,31 @@ app.get("/", function(req, res) {
 
 app.post('/', (req, res) => {
   const itemName = req.body.newItem;
+  // Because the value of the submit button is listTitle,
+  // listName will be equal to listTitle for any specific page!
+  const listName = req.body.list;
+  console.log(listName);
 
   const item = new Item({
     name: itemName,
   });
 
-  item.save((err) => {
-    if(!err) {
-      asyncUpdateList();
-    }
-  });
-  res.redirect('/');
+  if(listName === date.getDate()) {
+    item.save((err) => {
+      if(!err) {
+        asyncUpdateList();
+      }
+    });
+
+    res.redirect('/');
+  } else {
+    List.findOne({ name: listName}, (err, foundList) => {
+      foundList.items.push(item);
+      foundList.save();
+      res.redirect(`/${listName}`);
+    });
+  }
+
 });
 
 // When checkbox is checked, delete the checked entry
@@ -181,7 +195,7 @@ app.get('/:customListName', (req, res) => {
         });
         
       } else {
-        res.render("list", {listTitle: `${list.name} List`, newListItems: list.items});
+        res.render("list", {listTitle: `${list.name}`, newListItems: list.items});
       }
     }
   });
