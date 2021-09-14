@@ -189,7 +189,7 @@ app.get('/:customListName', (req, res) => {
       
         list.save((err) => {
           if(!err) {
-            console.log('List is successfully saved!');
+            console.log('List is successfully saved!!');
             res.redirect(`/${customListName}`);
           }
         });

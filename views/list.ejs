@@ -9,7 +9,7 @@
       <form action="/delete" method="post">
         <div class="item">
           <!-- Instead of saying on, it will give the item id number as a value when the checkbox gets checked
-             -->
+            onChange="this.form.submit() allows us to mimic submit even when the checkbox is checked.. -->
           <input type="checkbox" name="checkbox" value="<%= newListItems[i]._id %>" onChange="this.form.submit()">
           <p><%=  newListItems[i].name  %></p>
         </div>
