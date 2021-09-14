@@ -124,6 +124,21 @@ app.get("/", function(req, res) {
 
 });
 
+app.post('/', (req, res) => {
+  const itemName = req.body.newItem;
+
+  const item = new Item({
+    name: itemName,
+  });
+
+  item.save((err) => {
+    if(!err) {
+      asyncUpdateList();
+    }
+  });
+  res.redirect('/');
+});
+
 // When checkbox is checked, delete the checked entry
 // Also see list.ejs form which contains checkbox to understand this
 app.post('/delete', (req, res) => {
@@ -158,12 +173,12 @@ app.get('/:customListName', (req, res) => {
           items: defaultItems
         });
       
-        list.save((err => {
+        list.save((err) => {
           if(!err) {
             console.log('List is successfully saved!');
             res.redirect(`/${customListName}`);
           }
-        }));
+        });
         
       } else {
         res.render("list", {listTitle: `${list.name} List`, newListItems: list.items});
