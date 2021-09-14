@@ -143,6 +143,11 @@ app.get('/:customListName', (req, res) => {
   
   const customListName = req.params.customListName;
 
+  // If you want to get rid of favicon.ico to be added to lists
+  // <link rel="icon" href="data:,"> use this on header.ejs partial file.
+  // you're instructing the browser to not follow its default behavior of 
+  // looking for the icon in the root directory, but instead to try to load it 
+  // from the specified Data URL (which in this case is empty).
   List.findOne({ name: customListName }, (err, list) => {
     if(err) {
       console.error(err);
@@ -153,8 +158,13 @@ app.get('/:customListName', (req, res) => {
           items: defaultItems
         });
       
-        list.save();
-        res.redirect(`/${customListName}`);
+        list.save((err => {
+          if(!err) {
+            console.log('List is successfully saved!');
+            res.redirect(`/${customListName}`);
+          }
+        }));
+        
       } else {
         res.render("list", {listTitle: `${list.name} List`, newListItems: list.items});
       }
