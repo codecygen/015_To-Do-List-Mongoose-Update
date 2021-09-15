@@ -3,6 +3,7 @@
 const express = require("express");
 const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
+const _ = require('lodash');
 const date = require(__dirname + "/date.js");
 
 const app = express();
@@ -157,10 +158,20 @@ app.post('/', (req, res) => {
 // Also see list.ejs form which contains checkbox to understand this
 app.post('/delete', (req, res) => {
   const checkedItemId = req.body.checkbox;
+  const listName = req.body.listName;
+  console.log(listName.items);
 
-  deleteOneData(checkedItemId);
+  if(listName === date.getDate()) {
+    deleteOneData(checkedItemId);
+    res.redirect('/');
+  } else {
+    List.findOneAndUpdate({name: listName}, {$pull: {items: {_id: checkedItemId}}}, (err, foundList) => {
+      if(!err) {
+        res.redirect(`/${listName}`);
+      }
+    });
+  }
 
-  res.redirect('/');
 });
 
 app.get("/about", function(req, res){
@@ -170,7 +181,7 @@ app.get("/about", function(req, res){
 // Whatever is entered to the browser after slash, will be saved as a customListName
 app.get('/:customListName', (req, res) => {
   
-  const customListName = req.params.customListName;
+  const customListName = _.capitalize(req.params.customListName);
 
   // If you want to get rid of favicon.ico to be added to lists
   // <link rel="icon" href="data:,"> use this on header.ejs partial file.
