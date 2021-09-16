@@ -3,6 +3,8 @@
 const express = require("express");
 const mongoose = require('mongoose');
 const bodyParser = require("body-parser");
+const dotenv = require('dotenv');
+dotenv.config();
 const _ = require('lodash');
 const date = require(__dirname + "/date.js");
 
@@ -16,7 +18,11 @@ app.use(express.static("public"));
 main().catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect("mongodb://localhost:27017/arasDB");
+  // Uncomment this option for local database.
+  // await mongoose.connect("mongodb://localhost:27017/testDB");
+
+  // I am using MongoDB Atlas as I need to deploy it in Heroku server.
+  await mongoose.connect(process.env.linkMongoDBAtlas, { useNewUrlParser: true });
 }
 
 const itemsSchema = new mongoose.Schema({
