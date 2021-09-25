@@ -7,4 +7,4 @@ localhost:3000 is the default list location.
 
 To create new custom list, simply type, localhost:3000/myCustomList
 
-myCustomList can be anything that comes to in your mind. System will create a new link for it.
+myCustomList can be anything that comes to your mind. System will create a new link for it.
